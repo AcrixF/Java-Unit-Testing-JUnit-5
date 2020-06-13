@@ -9,25 +9,24 @@ import java.util.stream.Collectors;
 
 public class BookShelf {
 
-    private final List<String> books = new ArrayList<>();
+    private final List<Book> books = new ArrayList<>();
 
-    public List<String> books() {
+    public List<Book> books() {
         return Collections.unmodifiableList(this.books);
     }
 
-    public void add(String... bookToAdd) {
+    public void add(Book... bookToAdd) {
         Arrays.stream(bookToAdd).forEach(books::add);
     }
 
-    public List<String> arrange() {
-        return books.stream().sorted(Comparator.naturalOrder())
+    public List<Book> arrange() {
+        return arrange(Comparator.<Book>naturalOrder());
+    }
+
+    public List<Book> arrange(Comparator<Book> criteria) {
+        return books.stream()
+                .sorted(criteria)
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public String toString() {
-        int count  = this.books.size();
-        String books = this.books.stream().collect(Collectors.joining(" "));
-        return books +  " " + count + " books found";
-    }
 }
