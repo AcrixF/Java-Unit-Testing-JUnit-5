@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.neoa.bookstore.model.BookShelf;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,4 +56,22 @@ public class BookShelfSpec {
             assertTrue(e instanceof UnsupportedOperationException, () -> "Should throw UnsupportedOperationException");
         }
     }
+
+    @Test
+    @DisplayName("Bookshelf Arranged By Book Title")
+    public void bookshelfArrangedByBookTitle() {
+        shelf.add("Effective Java", "Code Complete","The Mythical Man-Month");
+        List<String> books = shelf.arrange();
+        assertEquals(Arrays.asList("Code Complete","Effective Java", "The Mythical Man-Month"), books, () -> "Books in bookshelf should be arranged lexicographically by book title.");
+    }
+
+    @Test
+    @DisplayName("Books In BookShelf Are In Insertion Order After Calling Arrange")
+    public void booksInBookShelfAreInInsertionOrderAfterCallingArrange() {
+        shelf.add("Effective Java", "Code Complete", "The Mythical Man-Month");
+        shelf.arrange();
+        List<String> books = shelf.books();
+        assertEquals(Arrays.asList("Effective Java", "Code Complete", "The Mythical Man-Month"), books, () -> "Books in bookshelf are in insertion order");
+    }
+
 }
