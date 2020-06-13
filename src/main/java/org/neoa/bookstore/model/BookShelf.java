@@ -1,8 +1,7 @@
 package org.neoa.bookstore.model;
 
-import lombok.ToString;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,22 +9,13 @@ import java.util.stream.Collectors;
 public class BookShelf {
 
     private final List<String> books = new ArrayList<>();
-    private final int capacity;
-
-    public BookShelf() {
-        this.capacity  = Integer.MAX_VALUE;
-    }
-
-    public BookShelf(int capacity) {
-        this.capacity = capacity;
-    }
 
     public List<String> books() {
-        return books;
+        return Collections.unmodifiableList(this.books);
     }
 
-    public void add(String book) {
-        this.books.add(book);
+    public void add(String... bookToAdd) {
+        Arrays.stream(bookToAdd).forEach(books::add);
     }
 
     @Override
