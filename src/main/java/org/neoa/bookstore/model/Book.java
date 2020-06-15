@@ -22,6 +22,14 @@ public class Book implements Comparable<Book> {
         this.publishedOn = publishedOn;
     }
 
+    public void startedReadingOn(LocalDate startedOn) {
+        this.startedReadingOn = startedOn;
+    }
+
+    public void finishedReadingOn(LocalDate finishOn) {
+        this.finishedReadingOn = finishOn;
+    }
+
     public boolean isRead() {
         return startedReadingOn != null && finishedReadingOn != null;
     }

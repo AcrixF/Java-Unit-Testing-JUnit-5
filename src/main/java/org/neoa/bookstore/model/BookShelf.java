@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+
 public class BookShelf {
 
     private final List<Book> books = new ArrayList<>();
@@ -40,5 +41,22 @@ public class BookShelf {
         return this.books.stream()
                 .collect(Collectors.groupingBy(groupByFunction));
     }
+
+    public Progress progress() {
+
+        if (books.isEmpty()) {
+            return Progress.notStarted();
+        }
+
+        int booksRead = Long.valueOf(books.stream().filter(Book::isRead).count()).intValue();
+        int booksIsInProgress = Long.valueOf(books.stream().filter(Book::isProgress).count()).intValue();
+        int booksToRead = books.size() - booksRead - booksIsInProgress;
+        int percentageCompleted = booksRead * 100 / books.size();
+        int percentageToRead = booksToRead * 100 / books.size();
+        int percentageInProgress = booksIsInProgress * 100/ books.size();
+        return new Progress(percentageCompleted, percentageToRead, percentageInProgress);
+    }
+
+
 
 }
