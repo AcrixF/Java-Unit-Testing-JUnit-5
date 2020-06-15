@@ -2,6 +2,7 @@ package org.neoa.bookstore;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.neoa.bookstore.model.Book;
@@ -39,67 +40,83 @@ public class BookShelfSpec {
         cleanCode = new Book("Clean Code", "Robert C. Martin", LocalDate.of(2008, Month.JANUARY, 10));
     }
 
-    @Test
-    @DisplayName("Is empty when no book is added to it.")
-    void shelfEmptyWhenNoBookAdded(TestInfo testInfo) throws Exception {
-        List<Book> books = shelf.books();
-        assertTrue(books.isEmpty(), () -> "BookShelf should be empty.");
-    }
+    @Nested
+    @DisplayName("BookShelf is empty ")
+    class IsEmpty {
 
-    @Test
-    @DisplayName("Bookshelf Contains Two Books When Two Books Added.")
-    public void bookshelfContainsTwoBooksWhenTwoBooksAdded() {
-        shelf.add(effectiveJava, codeComplete);
-        List<Book> books = shelf.books();
-        assertEquals(2, books.size(), () -> "BookShelf should have two books.");
-    }
+        @Test
+        @DisplayName("Is empty when no book is added to it.")
+        void shelfEmptyWhenNoBookAdded(TestInfo testInfo) throws Exception {
+            List<Book> books = shelf.books();
+            assertTrue(books.isEmpty(), () -> "BookShelf should be empty.");
+        }
 
-    @Test
-    @DisplayName("Empty BookShelf When Add Is Called Without Books.")
-    public void emptyBookShelfWhenAddIsCalledWithoutBooks() {
-        shelf.add();
-        List<Book> books = shelf.books();
-        assertTrue(books::isEmpty, () -> "BookShelf should be empty.");
-    }
-
-    @Test
-    @DisplayName("Books Returned From BookShelf Is Immutable For Client.")
-    public void booksReturnedFromBookShelfIsImmutableForClient() {
-        shelf.add(effectiveJava, codeComplete);
-        List<Book> books = shelf.books();
-        try {
-            books.add(mythicalManMonth);
-            fail(() -> "Should not be able to add book to books");
-        } catch (Exception e) {
-            assertTrue(e instanceof UnsupportedOperationException, () -> "Should throw UnsupportedOperationException");
+        @Test
+        @DisplayName("Empty BookShelf When Add Is Called Without Books.")
+        public void emptyBookShelfWhenAddIsCalledWithoutBooks() {
+            shelf.add();
+            List<Book> books = shelf.books();
+            assertTrue(books::isEmpty, () -> "BookShelf should be empty.");
         }
     }
 
-    @Test
-    @DisplayName("Bookshelf Arranged By Book Title")
-    public void bookshelfArrangedByBookTitle() {
-        shelf.add(effectiveJava, codeComplete, mythicalManMonth);
-        List<Book> books = shelf.arrange();
-        assertEquals(Arrays.asList(codeComplete, effectiveJava, mythicalManMonth), books, () -> "Books in bookshelf should be arranged lexicographically by book title.");
+    @Nested
+    @DisplayName("BookShelf after adding Books")
+    class BooksAreAdded {
+
+        @Test
+        @DisplayName("Bookshelf Contains Two Books When Two Books Added.")
+        public void bookshelfContainsTwoBooksWhenTwoBooksAdded() {
+            shelf.add(effectiveJava, codeComplete);
+            List<Book> books = shelf.books();
+            assertEquals(2, books.size(), () -> "BookShelf should have two books.");
+        }
+
+        @Test
+        @DisplayName("Books Returned From BookShelf Is Immutable For Client.")
+        public void booksReturnedFromBookShelfIsImmutableForClient() {
+            shelf.add(effectiveJava, codeComplete);
+            List<Book> books = shelf.books();
+            try {
+                books.add(mythicalManMonth);
+                fail(() -> "Should not be able to add book to books");
+            } catch (Exception e) {
+                assertTrue(e instanceof UnsupportedOperationException, () -> "Should throw UnsupportedOperationException");
+            }
+        }
+
     }
 
-    @Test
-    @DisplayName("Books In BookShelf Are In Insertion Order After Calling Arrange")
-    public void booksInBookShelfAreInInsertionOrderAfterCallingArrange() {
-        shelf.add(effectiveJava, codeComplete, mythicalManMonth);
-        shelf.arrange();
-        List<Book> books = shelf.books();
-        assertEquals(Arrays.asList(effectiveJava, codeComplete, mythicalManMonth), books, () -> "Books in bookshelf are in insertion order");
+    @Nested
+    @DisplayName("BookShelf is Arranged")
+    class IsArranged {
+        @Test
+        @DisplayName("Bookshelf Arranged By Book Title")
+        public void bookshelfArrangedByBookTitle() {
+            shelf.add(effectiveJava, codeComplete, mythicalManMonth);
+            List<Book> books = shelf.arrange();
+            assertEquals(Arrays.asList(codeComplete, effectiveJava, mythicalManMonth), books, () -> "Books in bookshelf should be arranged lexicographically by book title.");
+        }
+
+        @Test
+        @DisplayName("Books In BookShelf Are In Insertion Order After Calling Arrange")
+        public void booksInBookShelfAreInInsertionOrderAfterCallingArrange() {
+            shelf.add(effectiveJava, codeComplete, mythicalManMonth);
+            shelf.arrange();
+            List<Book> books = shelf.books();
+            assertEquals(Arrays.asList(effectiveJava, codeComplete, mythicalManMonth), books, () -> "Books in bookshelf are in insertion order");
+        }
+
+        @Test
+        @DisplayName("Bookshelf Arranged By User Provided Criteria")
+        public void bookshelfArrangedByUserProvidedCriteria() {
+            shelf.add(effectiveJava, codeComplete, mythicalManMonth);
+            Comparator<Book> reversed = Comparator.<Book> naturalOrder().reversed();
+            List<Book> books = shelf.arrange(reversed);
+            assertThat(books).isSortedAccordingTo(reversed);
+        }
     }
 
-    @Test
-    @DisplayName("Bookshelf Arranged By User Provided Criteria")
-    public void bookshelfArrangedByUserProvidedCriteria() {
-        shelf.add(effectiveJava, codeComplete, mythicalManMonth);
-        Comparator<Book> reversed = Comparator.<Book> naturalOrder().reversed();
-        List<Book> books = shelf.arrange(reversed);
-        assertThat(books).isSortedAccordingTo(reversed);
-    }
 
     @Test
     @DisplayName("Group Books Inside BookShelf By Publication Year")
