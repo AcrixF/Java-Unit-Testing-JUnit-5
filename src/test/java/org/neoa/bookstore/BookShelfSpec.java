@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.neoa.bookstore.model.Book;
+import org.neoa.bookstore.model.BookFilter;
+import org.neoa.bookstore.model.BookPublishedYearFilter;
 import org.neoa.bookstore.model.BookShelf;
 import org.neoa.bookstore.model.Progress;
 
@@ -221,6 +223,40 @@ public class BookShelfSpec {
             assertThat(progress.toRead()).isEqualTo(40);
         }
 
+    }
+
+    @Nested
+    @DisplayName("Filtering")
+    class Filtering {
+
+        @Test
+        @DisplayName("should find books with title containing text")
+        public void shouldFindBooksWithTitleContainingText() {
+            shelf.add(codeComplete, effectiveJava, mythicalManMonth, cleanCode);
+            List<Book> books = shelf.findBooksByTitle("code");
+            assertThat(books.size()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("should find books with title containing text and published after specified date.")
+        public void shouldFilterSearchedBooksBasedOnPublishedDate() {
+            shelf.add(codeComplete, effectiveJava, mythicalManMonth, cleanCode);
+            List<Book> books = shelf.findBooksByTitle("code", b -> b.getPublishedOn().isBefore(LocalDate.of(2014,12,31)));
+            assertThat(books.size()).isEqualTo(2);
+        }
+    }
+
+    @Nested
+    @DisplayName("Filters")
+    class BookPublishedFilterSpec {
+
+        @Test
+        @DisplayName("is after specified year")
+        public void validateBookPublishedDatePostAskedYear() {
+            BookFilter filter = BookPublishedYearFilter.After(2007);
+            assertTrue(filter.apply(cleanCode));
+            assertFalse(filter.apply(codeComplete));
+        }
     }
 
 }

@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 
 public class BookShelf {
 
@@ -30,7 +32,7 @@ public class BookShelf {
     public List<Book> arrange(Comparator<Book> criteria) {
         return books.stream()
                 .sorted(criteria)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public Map<Year, List<Book>> groupByPublicationYear() {
@@ -58,5 +60,15 @@ public class BookShelf {
     }
 
 
+    public List<Book> findBooksByTitle(String title) {
+        return findBooksByTitle(title, b -> true);
+    }
+
+    public List<Book> findBooksByTitle(String title, BookFilter filter) {
+        return books.stream()
+                .filter(b -> b.getTitle().toLowerCase().contains(title))
+                .filter(book -> filter.apply(book))
+                .collect(toList());
+    }
 
 }
